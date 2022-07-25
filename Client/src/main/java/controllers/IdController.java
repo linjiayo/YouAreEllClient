@@ -2,16 +2,27 @@ package controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import models.Id;
 
 public class IdController {
+    private ServerController serverController;
     private HashMap<String, Id> allIds;
 
     Id myId;
 
+    public IdController() {
+        this.serverController = ServerController.getInstance();
+    }
+
     public ArrayList<Id> getIds() {
-        return null;
+        ArrayList<Id> ids = new ArrayList<>();
+        for (Map.Entry<String, Id> e : allIds.entrySet()) {
+            ids.add(e.getValue());
+        }
+        return ids;
     }
 
     public Id postId(Id id) {
