@@ -36,25 +36,50 @@ public class ServerController {
         return instance;
      }
 
+
+     private String getReq(String urlPath) {
+         try {
+             CloseableHttpClient httpClient = HttpClients.createDefault();
+             HttpGet httpGetMsgs = new HttpGet(rootURL + urlPath);
+
+             CloseableHttpResponse res = httpClient.execute(httpGetMsgs);
+
+             assert(res.getStatusLine().getStatusCode() == 200);
+
+             String jsonRes = EntityUtils.toString(res.getEntity());
+             httpClient.close();
+             return jsonRes;
+        } catch (IOException e) {
+        System.out.println("Invalid request");
+        return "";
+         }
+     }
+
+//     private String postMsg(String gitHubId) {
+//         try {
+//             CloseableHttpClient httpclient = HttpClients.createDefault();
+//             String json = this.mapper.writeValueAsString(id);
+//             HttpPost httpPost = new HttpPost(rootURL + "id");
+//             httpPost.setEntity(new StringEntity(json));
+//
+//             CloseableHttpResponse res = httpclient.execute(httpPost);
+//             assert(res.getStatusLine().getStatusCode() == 200);
+//
+//             String jsonRes = EntityUtils.toString(res.getEntity());
+//             httpclient.close();
+//             return jsonRes;
+//
+//         } catch (JsonProcessingException e) {
+//         } catch(IOException e) {
+//         }
+//         return "";
+//     }
+
     public String idGet() {
         // url -> /ids/
         // send the server a get with url
         // return json from server
-        try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet httpGetId = new HttpGet(rootURL + "/ids");
-            //String JsonStr = "";
-            //HttpEntity strEntity =  new StringEntity(JsonStr, ContentType.APPLICATION_JSON);
-            CloseableHttpResponse res = httpClient.execute(httpGetId);
-
-            assert(res.getStatusLine().getStatusCode() == 200);
-
-            String jsonRes = EntityUtils.toString(res.getEntity());
-            httpClient.close();
-            return jsonRes;
-        } catch (IOException e) {
-            return null;
-        }
+        return getReq("/ids");
     }
     public String idPost(Id id) {
         // url -> /ids/
@@ -102,6 +127,15 @@ public class ServerController {
         }
     }
 
+    /** Gets from /messages/ **/
+    public String getMessages() {
+        return getReq("/messages");
+    }
+
+    // /ids/:mygithubid/messages/
+    public String getMessageFromId(String githubId) {
+        return getReq(String.format("/ids/%s/messages", githubId));
+    }
 
 }
 
