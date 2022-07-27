@@ -18,6 +18,7 @@ class TestServerController {
     void idGet() {
         ServerController instance = ServerController.getInstance();
         String idString = instance.getReq("/ids");
+        Assertions.assertNotNull(idString);
         System.out.println(idString);
     }
 }

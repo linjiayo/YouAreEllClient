@@ -62,7 +62,13 @@ public class ServerController {
              CloseableHttpClient httpclient = HttpClients.createDefault();
              HttpPost httpPost = new HttpPost(rootURL + urlPath);
              httpPost.setEntity(new StringEntity(JsonPayload, ContentType.APPLICATION_JSON));
+             httpPost.setHeader("Accept", "application/json");
+             httpPost.setHeader("Content-Type", "application/json");
              CloseableHttpResponse res = httpclient.execute(httpPost);
+
+             String response = EntityUtils.toString(res.getEntity());
+             System.out.println(res.getStatusLine());
+             System.out.println(response);
              assert(res.getStatusLine().getStatusCode() == 200);
 
              String jsonRes = EntityUtils.toString(res.getEntity());
