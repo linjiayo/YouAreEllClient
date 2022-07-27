@@ -17,7 +17,7 @@ class TestServerController {
     @Test
     void idGet() {
         ServerController instance = ServerController.getInstance();
-        String idString = instance.idGet();
+        String idString = instance.getReq("/ids");
         System.out.println(idString);
     }
 }

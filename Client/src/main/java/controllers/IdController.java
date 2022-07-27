@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +34,33 @@ public class IdController {
         return null;
     }
 
-    public Id putId(Id id) {
-        return null;
+    public String idGet() {
+        return serverController.getReq("/ids");
     }
- 
+
+    public String idPost(Id id) {
+        // url -> /ids/
+        // create json from Id
+        // request
+        // reply
+        // return json
+        try {
+            String payload = serverController.getMapper().writeValueAsString(id);
+            return serverController.post("/ids", payload);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+    }
+
+    public String putId(Id id) {
+        try {
+            String payload = serverController.getMapper().writeValueAsString(id);
+            return serverController.putReq("/ids", payload);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+
+    }
 }
