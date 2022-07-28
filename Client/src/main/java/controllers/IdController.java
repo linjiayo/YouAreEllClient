@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import models.Id;
+import models.Message;
 
 public class IdController {
     private ServerController serverController;
-    private HashMap<String, Id> allIds;
+    private HashMap<String, Id> idCache;
 
     Id myId;
 
@@ -18,22 +21,16 @@ public class IdController {
         this.serverController = ServerController.getInstance();
     }
 
-    public ArrayList<Id> getIds() {
-        ArrayList<Id> ids = new ArrayList<>();
-        for (Map.Entry<String, Id> e : allIds.entrySet()) {
-            ids.add(e.getValue());
+    // TODO refactor separation of controllers
+    public List<Id> parseJsonIdArr(String jsonArr) {
+        try {
+            List<Id> list = serverController.getMapper().readValue(jsonArr, new TypeReference<ArrayList<Id>>(){});
+            return list;
+        } catch(JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
         }
-        return ids;
     }
-
-    public Id postId(Id id) {
-        // create json from id
-        // call server, get json result Or error
-        // result json to Id obj
-
-        return null;
-    }
-
     public String idGet() {
         return serverController.getReq("/ids");
     }
@@ -61,6 +58,5 @@ public class IdController {
             System.out.println(e.getMessage());
             return "";
         }
-
     }
 }
