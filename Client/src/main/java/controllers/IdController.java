@@ -31,6 +31,10 @@ public class IdController {
             return null;
         }
     }
+
+    public List<Id> getIdsList() {
+        return parseJsonIdArr(idGet());
+    }
     public String idGet() {
         return serverController.getReq("/ids");
     }

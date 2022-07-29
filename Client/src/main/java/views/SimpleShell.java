@@ -10,12 +10,19 @@ import java.util.List;
 import controllers.IdController;
 import controllers.MessageController;
 import controllers.TransactionController;
+import models.Id;
+import models.Message;
 import youareell.YouAreEll;
 
 // Simple Shell is a Console view for youareell.YouAreEll.
 public class SimpleShell {
+    private MessageTextView msgView;
+    private IdTextView idView;
 
-
+    public SimpleShell() {
+        msgView = new MessageTextView();
+        idView = new IdTextView();
+    }
     public static void prettyPrint(String output) {
         // yep, make an effort to format things nicely, eh?
         System.out.println(output);
@@ -24,7 +31,9 @@ public class SimpleShell {
 
         YouAreEll urll = new YouAreEll(new TransactionController(
                 new MessageController(), new IdController()));
-        
+        SimpleShell shell = new SimpleShell();
+        TransactionController tControl = new TransactionController(new MessageController(), new IdController());
+
         String commandLine;
         BufferedReader console = new BufferedReader
                 (new InputStreamReader(System.in));
@@ -35,12 +44,12 @@ public class SimpleShell {
         //we break out with <ctrl c>
         while (true) {
             //read what the user enters
-            System.out.println("cmd? ");
+            System.out.println("Enter a command: ");
             commandLine = console.readLine();
 
             //input parsed into array of strings(command and arguments)
             String[] commands = commandLine.split(" ");
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
 
             //if the user entered a return, just loop again
             if (commandLine.equals(""))
@@ -68,18 +77,48 @@ public class SimpleShell {
 
                 // Specific Commands.
 
+                //TODO refactor
                 // ids
                 if (list.contains("ids")) {
-//                    String results = webber.get_ids();
-//                    SimpleShell.prettyPrint(results);
+                    if (list.size() == 1) {
+                        List<Id> res = tControl.getIdCtrl().getIdsList();
+                        prettyPrint(shell.idView.idsString(res));
+                    } else if (list.size() == 3 && list.get(0).equals("ids")) {
+                        tControl.getIdCtrl().idPost(new Id(list.get(1), list.get(2)));
+                    }
+                    System.out.println("Invalid command. Usage:\nids [name] [github_Id]");
                     continue;
                 }
 
                 // messages
                 if (list.contains("messages")) {
-//                    String results = webber.get_messages();
-//                    SimpleShell.prettyPrint(results);
+                    if (list.get(0).equals("messages")) {
+                        if (list.size() == 1) {
+                            List<Message> results = tControl.getMsgCtrl().getMessages();
+                            prettyPrint(shell.msgView.messagesString(results));
+                        } else if (list.size() == 2) {
+                            List<Message> results = tControl.getMsgCtrl().getMessagesForId(new Id(list.get(1)));
+                            prettyPrint(shell.msgView.messagesString(results));
+                        }
+                        continue;
+                    }
+                    System.out.println("Invalid Command. Usage:\nmessages [github_id] [message] [to] [github-id]");
                     continue;
+                }
+
+                if (list.contains("send")) {
+                    if (list.size() == 3 && list.get(0).equals("send")) {
+                        Id id = new Id(list.get(1));
+                        Message msg = new Message(list.get(2), id.getGithub());
+                        tControl.getMsgCtrl().postMsgJsonId(id, msg);
+                    } else if (list.size() == 5 && list.get(0). equals("send")) {
+                        Id fromId = new Id(list.get(1));
+                        Message msg = new Message(list.get(2), list.get(1), list.get(4));
+                        tControl.getMsgCtrl().postMsgJsonId(fromId, msg);
+                    }
+                    else {
+                        System.out.println("Invalid Command. Usage:\nsend github_id message [to] [github-id]");
+                    }
                 }
                 // you need to add a bunch more.
 
@@ -128,5 +167,20 @@ public class SimpleShell {
 
         }
 
+    public MessageTextView getMsgView() {
+        return msgView;
+    }
+
+    public void setMsgView(MessageTextView msgView) {
+        this.msgView = msgView;
+    }
+
+    public IdTextView getIdView() {
+        return idView;
+    }
+
+    public void setIdView(IdTextView idView) {
+        this.idView = idView;
+    }
 
     }

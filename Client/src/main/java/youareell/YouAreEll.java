@@ -3,9 +3,7 @@ package youareell;
 import controllers.*;
 
 public class YouAreEll {
-
     TransactionController tt;
-
 
     public YouAreEll (TransactionController t) {
         this.tt = t;
